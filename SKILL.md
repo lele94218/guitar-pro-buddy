@@ -1,54 +1,58 @@
 ---
 name: guitar-pro-buddy
-description: 将用户提供的 PDF、谱面图片或已授权查看的 Guitar Pro 窗口转录成可编辑吉他谱，修订现有 GP/GP5，并按需制作带音名、指板图和练法的 PDF 课件。适用于 Guitar Pro 打谱、转谱、谱面核对及吉他练习课件；不用于单纯乐理问答或音频扒谱。
+description: Transcribe user-provided PDFs, score images, or authorized Guitar Pro windows into editable guitar scores; revise GP/GP5 files and optionally create practice PDFs with note names, fretboard diagrams, and exercises. Use for Guitar Pro transcription, score checking, and guitar practice handouts, not standalone theory questions or audio transcription.
 ---
 
 # Guitar Pro Buddy
 
-交付忠于指定原谱、能在 Guitar Pro 打开和编辑的文件。课件、音名、和声分析等仅按用户要求增加，不把每次转谱都扩展为整套教学材料。
+**English** | [简体中文](SKILL.zh-CN.md)
 
-## 先确定依据与交付
+Deliver files that preserve the designated source and open for editing in Guitar Pro. Add handouts, note names, or harmonic analysis only when requested; do not turn every transcription into a complete course. Follow the user's language for conversation and deliverables, regardless of the documentation language.
 
-- 从会话、源文件和已有项目恢复曲目、版本、页码、小节、声部和输出要求；充分利用已确认的授权与偏好。只有会影响结果且无法推断的信息才需澄清。
-- 用户指定的版本是依据。不要偷偷替换成网上版本或被明确排除的本地谱；不要把自编练习当作原书练习。
-- 先查现有可编辑文件和结构化转录数据，避免从截图重新做已完成的工作。旧脚本先读再用，尤其是批量替换、全页截图、自动播放和修改应用设置的部分。
-- 分别记录印刷页码、PDF 页码、书面小节号、播放展开后的序号。歌词、人声轨、吉他合轨与分轨按本次要求处理。
-- 新项目沿用全局项目目录约定。课件制作与归档建议见 [references/courseware.md](references/courseware.md)；已有项目不搬迁。
+## Establish the source and deliverable
 
-## 按任务加载资料
+- Recover the piece, edition, pages, measures, parts, and output requirements from the conversation, source files, and existing project. Reuse established authorization and preferences. Clarify only consequential information that cannot be inferred.
+- Treat the user's chosen edition as the source. Do not silently substitute an online version or an explicitly excluded local file, or present invented exercises as textbook material.
+- Check editable files and structured transcription data before redoing completed work from screenshots. Inspect old scripts before running them, especially bulk replacements, full-page captures, automatic playback, and application setting changes.
+- Track printed page numbers, PDF page numbers, written measure numbers, and playback-expanded positions separately. Handle lyrics, vocal tracks, and guitar track merging or separation as requested.
+- Follow the user's project-location conventions for new work. See [references/courseware.md](references/courseware.md) for handout and archive guidance; do not relocate existing projects.
 
-- 从原谱转录、生成 GP5、在 macOS Guitar Pro 保存原生文件或导出 PDF：读 [references/transcription.md](references/transcription.md)。
-- 需要直接修改原生 `.gp` 的 GPIF、修复歌词或处理大文件：先读 [references/gpif-safety.md](references/gpif-safety.md)。普通转谱不必编辑 GPIF。
-- 用户要求中文课件、逐音音名、级数、指板或 CAGED：读 [references/courseware.md](references/courseware.md)。
+## Load references by task
 
-## 图片与资源纪律
+- For source transcription, GP5 generation, or saving native files and exporting PDFs in macOS Guitar Pro, read [references/transcription.md](references/transcription.md).
+- Before directly editing native `.gp` GPIF, repairing lyrics, or processing large files, read [references/gpif-safety.md](references/gpif-safety.md). Ordinary transcription need not involve GPIF edits.
+- For explanatory handouts, per-note labels, scale degrees, fretboards, or CAGED annotations, read [references/courseware.md](references/courseware.md).
 
-- 先读文本、页码、结构化音符和已有检查结果，再看必要谱面。PDF 低分辨率渲染、局部裁剪；原图留本地。
-- **每次 `view_image` 前先裁剪、缩小、压成 JPEG 并检查大小，目标不超过约 300 KiB；每次只返回一张必要小图。** 可用 `scripts/prepare_image.py`。细节读不清就缩小裁剪范围，不靠反复发送整页原图。
-- 图片密集工作放临时线程；长期线程只接收文字结论、逐小节进度和产物路径。当前工具无法新建线程时，不假装已隔离：先完成不依赖图像的工作，再让用户另开临时线程处理大量视觉核对。不要把自动创建子代理当作线程隔离的默认替代。
-- 默认使用静态谱面截图，不使用屏幕录制；用户已有的有效截图授权不必反复询问。截图只取相关谱面窗口。若无当前可用授权且确需截屏，说明范围后再获取许可。
-- 按指定图片转录时，不自行采集 MIDI、录制音频或改动播放路由。用户要求音乐结构核对且另有授权时，才按该范围使用相应方法。
-- 不直接运行未经审查的批量 XML 转换。设置输入、节点、克隆与输出上限；新脚本先小样本，再运行受监控版本。`scripts/run_bounded.py` 适合**单个 Python 数据处理进程**，不用于 GUI 自动化、打开 Guitar Pro 或多进程任务。
-- 超限、超时、异常内存增长或退出码 137 后，先查原因，禁止立即原样重跑。停止相关任务进程，不终止无关 Python 服务。
+The Chinese counterpart of each reference is available through its language link. Read one language version, not both, unless comparing translations is the task.
 
-## 核对与交付
+## Images and resource limits
 
-1. 转录数据按小节落盘，保留音高/弦品、时值、声部、奏法及对应原谱位置。长任务及时更新文字进度文件，明确哪些已核对、哪些仍存疑。
-2. 写文件后重新读取：核对轨数、小节、时值、音符和关键奏法；装饰音与弱起按真实结构处理。检查通过不等于已逐音对过原图。
-3. 打开最终文件验证应用兼容性；重点检查人声八度、吉他弦品、推弦目标、鼓组映射、歌词段落、反复跳转。只做文字/注释修改时，比较音乐数据，防止无意改谱。
-4. 候选文件先写项目输出目录，检查后再原子替换交付文件。备份和调试产物留项目内，不在用户成果目录堆多个“最终版”。
-5. 提供最终文件链接、声部与范围、实际完成的核对和未解决问题。不能把“时值合法”“可打开”描述成“与原谱完全一致”。
+- Read text, page references, structured notes, and prior checks before inspecting necessary score images. Render PDFs at modest resolution and crop relevant areas; keep originals locally.
+- **Before every `view_image`, crop, resize, encode as JPEG, and check the size. Target roughly 300 KiB or less, and return only one necessary small image at a time.** Use `scripts/prepare_image.py`. If details are unclear, narrow the crop rather than repeatedly sending full-resolution pages.
+- Use temporary threads for image-heavy work. Return text findings, measure-level progress, and artifact paths to the long-lived thread. If tools cannot create a thread, do not pretend isolation exists: finish independent text/data work, then ask the user to open a temporary thread for extensive visual review. Automatically spawning subagents is not the default substitute.
+- Prefer static score-window captures over screen recording. Do not repeatedly request permission already covered by valid user authorization. Capture only the relevant score window. If required capture has no applicable authorization, explain its scope and obtain permission first.
+- For image-based transcription, do not independently capture MIDI, record audio, or change playback routing. Use those methods only within applicable authorization when the user requests such checks.
+- Do not run unreviewed bulk XML transformations. Bound inputs, nodes, clones, and output. Test new scripts on small fixtures before supervised execution. `scripts/run_bounded.py` is for **one Python data-processing process**, not GUI automation, launching Guitar Pro, or multiprocessing.
+- After a limit breach, timeout, abnormal memory growth, or exit code 137, investigate before retrying. Never immediately rerun unchanged. Stop task-related processes without terminating unrelated Python services.
 
-## 随附工具
+## Validate and deliver
 
-使用项目虚拟环境的 Python；不要为了技能全局安装依赖。
+1. Persist transcription data by measure, including pitch/string-fret positions, durations, voices, articulations, and source locations. Maintain text progress notes for long tasks, distinguishing checked passages from uncertainties.
+2. Read generated files back and compare track counts, measures, durations, notes, and key articulations. Handle grace notes and pickups according to the actual structure. Passing these checks does not establish note-for-note agreement with the source image.
+3. Open the final file to verify application compatibility. Focus on vocal octaves, guitar positions, bend targets, drum mappings, lyric sections, and repeat/jump navigation. For text-only edits, compare musical data to prevent accidental score changes.
+4. Write candidates into the project's output directory, validate them, then atomically replace the deliverable. Keep backups and debug artifacts in the project rather than accumulating multiple “final” versions in the user's archive.
+5. Provide the final file link, covered parts and measures, checks actually completed, and unresolved issues. Do not describe “valid duration” or “opens successfully” as “identical to the source.”
+
+## Included tools
+
+Use the working project's virtual-environment Python; do not install global dependencies just for this skill.
 
 ```sh
-# 需要 Pillow；crop 坐标是输入图片的像素。命令只写小图并输出文字信息。
+# Requires Pillow. Crop coordinates are input-image pixels; output is a file plus text metadata.
 python /path/to/skill/scripts/prepare_image.py source.png review.jpg --crop 100 200 1500 800
 
-# 标准库，macOS/Linux；受监控运行单个 Python 转换脚本，默认 192 MiB / 20 秒。
+# Standard library, macOS/Linux; supervise one Python script, default 192 MiB / 20 seconds.
 python /path/to/skill/scripts/run_bounded.py --rss-mib 192 --seconds 20 -- transform.py
 ```
 
-具体阈值按有证据的输入规模调整，不为绕过异常而随意上调。RSS 是采样监控，不是操作系统内存硬上限；任务结束监控同步退出。
+Choose limits based on observed input size, not to bypass unexplained failures. RSS supervision is sampled, not an operating-system memory ceiling. Monitoring exits when the task ends.

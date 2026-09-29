@@ -1,4 +1,4 @@
 interface:
   display_name: "Guitar Pro Buddy"
-  short_description: "准确转录吉他谱、制作练习课件，并控制图片与脚本资源开销"
-  default_prompt: "使用 $guitar-pro-buddy 将原谱准确转录成可编辑 Guitar Pro 文件，核对音符、节奏和奏法；如有要求，再制作练习 PDF。"
+  short_description: "Transcribe Guitar Pro scores and create practice handouts"
+  default_prompt: "Use $guitar-pro-buddy to transcribe the source into an editable Guitar Pro file, check notes, rhythms, and articulations, and create a practice PDF if requested."

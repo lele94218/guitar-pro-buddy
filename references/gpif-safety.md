@@ -1,43 +1,45 @@
-# 原生 GPIF：共享对象与资源控制
+# Native GPIF: shared objects and resource limits
 
-仅在普通 GP5 生成、应用导出或现有接口不能解决任务时直接修改原生 GPIF。
+**English** | [简体中文](gpif-safety.zh-CN.md)
 
-## 已验证的故障机制
+Edit GPIF directly only when ordinary GP5 generation, application export, or existing interfaces do not address the task.
 
-GP 文件中的 `Content/score.gpif` 同时含有：
+## An observed failure mechanism
 
-- 顶层 `Bars/Bar`、`Voices/Voice`、`Beats/Beat`、`Notes/Note` 数据区。
-- `MasterBar/Bars`、`Bar/Voices`、`Voice/Beats`、`Beat/Notes` 里的 ID 引用文本。
+`Content/score.gpif` inside a GP file contains both:
 
-**禁止按 `</Bars>`、`</Voices>` 等字符串全局插入对象。** 它会给每一处引用都插入整批数据，后续替换成倍放大，曾使约 456 KB 的 XML 转换占用数十 GB 内存。即使改为匹配最后一次标签，也比精确的直接子节点操作脆弱。
+- Top-level `Bars/Bar`, `Voices/Voice`, `Beats/Beat`, and `Notes/Note` collections.
+- ID-reference text in `MasterBar/Bars`, `Bar/Voices`, `Voice/Beats`, and `Beat/Notes`.
 
-用 DOM 或合适的 XML 解析器定位根节点的直接子数据区；改变引用文本时仅改变该引用元素。保留 CDATA（该 GP8 工作流依赖它显示文本）；标准库 minidom 支持 CDATA，普通 ElementTree 序列化不保留 CDATA 表示。
+**Never globally insert objects by replacing closing-tag strings such as `</Bars>` or `</Voices>`.** This inserts an entire collection into every reference list; subsequent replacements multiply the expansion. One such transformation of roughly 456 KB of XML consumed tens of GB of memory. Matching only the last closing tag is also more fragile than targeting the exact direct child.
 
-## 共享数据不是独立小节
+Use a DOM or suitable XML parser to locate the root's direct collection elements. Update reference text only on the intended reference element. Preserve CDATA, which this GP8 workflow relies on for text display. Standard-library minidom supports CDATA; ordinary ElementTree serialization does not preserve its representation.
 
-Guitar Pro 会复用相同的 Beat/Note 对象。若重复旋律不同段落有不同歌词，直接修改共享 Beat 会叠加或覆盖其他段落。
+## Shared data is not an independent measure
 
-- 从 MasterBar 逐次找到对应轨道的 Bar → Voice → Beat → Note。
-- 仅在需要独立变化的位置克隆对象，分配唯一 ID，更新该次引用。
-- 克隆计划来自固定的原始引用列表，不迭代正在不断追加的集合。
-- 给歌词、分段说明等修改核对每个出现位置；修复后不得出现一拍堆多个 Lyrics 块。
-- 修改前后按小节展开比较实际音高、节奏和奏法。必要的书写八度调整单独验证，不能随意排除所有音高字段。
+Guitar Pro can reuse identical Beat/Note objects. Editing a shared Beat for different lyrics in repeated passages can stack or overwrite lyrics elsewhere.
 
-## 执行前的边界
+- Follow each MasterBar occurrence to its track's Bar → Voice → Beat → Note.
+- Clone only objects requiring independent changes, assign unique IDs, and update that occurrence's references.
+- Build the clone plan from a fixed snapshot of original references, never from a collection being continuously appended to.
+- Check every occurrence affected by lyric or section-text changes. A repaired beat must not accumulate multiple Lyrics blocks.
+- Compare sounding pitches, rhythms, and articulations expanded by measure before and after edits. Validate intentional written-octave changes separately; do not broadly exclude all pitch fields.
 
-按输入规模设限，不假定每首曲子都是 83 小节或 6 轨。检查 ZIP 压缩后大小、条目数、声明的解压总量和单个 GPIF 大小，再读取；限制 XML 节点数、深度、克隆数量与序列化字节数。拒绝不需要的 DTD/实体声明。
+## Bound execution before running
 
-In Bloom 的成功修复使用：输入 GPIF ≤2 MiB、解压总量 ≤8 MiB、克隆 ≤4000、输出 GPIF ≤4 MiB。实际 XML 由456,489字节增至994,266字节，运行约1秒、峰值约135 MiB。这些是该案例的可参考测量，不是所有任务的通用预算。
+Choose limits based on input size; do not assume every piece has 83 measures or six tracks. Check compressed ZIP size, entry count, declared total expanded size, and GPIF size before reading. Limit XML nodes, depth, clones, and serialized bytes. Reject unnecessary DTD/entity declarations.
 
-先做小型回归用例：含同名引用与顶层数据区、共享歌词、CDATA；验证只修改指定对象。再受监控运行真实数据。
+A successful In Bloom repair used: input GPIF ≤2 MiB, expanded archive ≤8 MiB, clones ≤4000, and output GPIF ≤4 MiB. Actual XML grew from 456,489 to 994,266 bytes, with roughly one second of execution and 135 MiB peak RSS. These are case measurements, not universal budgets.
 
-`scripts/run_bounded.py`：
+First run small regression fixtures containing same-named reference and collection elements, shared lyrics, and CDATA. Verify that only intended objects change, then supervise the real transformation.
 
-- 在独立进程组里运行单个 Python 脚本，监控其 RSS 和运行时间；超限终止该进程组。
-- 使用 CPU 时间和单文件写入大小限制；记录成功运行的进程峰值 RSS。
-- RSS 采样可能短暂超调，**不是内核内存硬上限**。macOS 上测试过的 RLIMIT_AS/RLIMIT_DATA 不可用，不能伪称已启用。
-- 不能覆盖任意多进程程序、脱离进程组的子进程、GPU 内存或外部 Guitar Pro 应用。用它执行无子进程的数据转换，GUI 单独操作。
-- 不自动放宽预算或重试。超限先看代码和计划数量，再决定是否需要调整。
-- 监控随子进程退出，不安装后台服务。
+`scripts/run_bounded.py`:
 
-候选输出写项目内临时文件，验证后原子替换候选文件，再决定交付。异常退出不得覆盖现有成果；不要用“ZIP 可读”代替音乐内容和应用兼容性核对。
+- Runs one Python script in a separate process group, monitors RSS and elapsed time, and terminates the group if a threshold is exceeded.
+- Applies CPU-time and per-file write-size limits; reports worker peak RSS on normal completion.
+- Samples RSS, so brief overshoot is possible. **It is not a kernel memory ceiling.** Tested RLIMIT_AS/RLIMIT_DATA settings were unavailable on macOS; do not claim those protections are enabled.
+- Does not cover arbitrary multiprocessing programs, detached descendants, GPU memory, or the external Guitar Pro application. Use it for transformations without child processes; operate the GUI separately.
+- Does not automatically relax limits or retry. Investigate the code and planned object counts before deciding whether a budget adjustment is warranted.
+- Exits with the worker; it installs no background service.
+
+Write a temporary candidate inside the project, validate it, and atomically replace the candidate file before deciding to deliver. Failures must not overwrite existing deliverables. A readable ZIP is not a substitute for musical-content checks and application compatibility.

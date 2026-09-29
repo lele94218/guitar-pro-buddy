@@ -1,29 +1,31 @@
-# 吉他练习课件与可选标注
+# Practice handouts and optional annotations
 
-仅在用户要求 PDF 课件或教学标注时应用这些要求；普通打谱不用自动制作附加材料。
+**English** | [简体中文](courseware.zh-CN.md)
 
-## 原书讲解要落实到课件
+Apply this guidance when the user requests PDF handouts or teaching annotations. Do not automatically add these deliverables to ordinary transcription work.
 
-先读正文、图例、音阶/和弦说明和练习曲说明；总结概念、练习目的、操作步骤、指定调性与把位及曲中应用。注明印刷页码，区分教材要求与补充练法。不要只截谱、把讲解压缩成空泛几句，或把“学到了第八课”当作前七课全熟练。
+## Carry the source explanations into the handout
 
-曲谱经准确录入 Guitar Pro 后导出，不用扫描页冒充重新打谱。中文说明与谱面清楚，默认简洁黑白；用户另有彩色标注要求时按最新要求。
+Read the source prose, legends, scale/chord explanations, and study notes first. Summarize concepts, purpose, steps, specified keys and positions, and how the material applies to the piece. Cite printed page numbers and distinguish source requirements from supplementary practice suggestions. Do not replace explanations with scans or generic summaries, or assume that reaching Lesson 8 means mastery of Lessons 1–7.
 
-## 音名、级数与指板
+Accurately enter the music in Guitar Pro and export the score; do not present scanned pages as newly typeset music. Keep explanations and notation legible, in the requested language. Prefer simple monochrome layouts unless the user requests color annotations.
 
-- 逐音音名保留升降号，双音分别标注，推弦写起始音与目标音。歌词/音名标注只作为说明时，不改变实际音高或节奏。
-- 明确级数的参照：相对全曲调性还是当前和弦。变化音不是错误音；和声判断不确定时说明依据及不确定范围。
-- 指板图紧凑、品距合理，弦距不夸张；琴弦粗细、品丝、定位点只为辨识服务。高把位裁切边缘不画成琴枕。
-- 图与实际弦品对应，不用通用音阶图代替这段实际路线。CAGED 字母表示形状而不是调名，重叠区不能靠一两个音唯一归类。
-- 用户要求曲中应用时，把分段与换把标记放在目标曲谱上，配相应图，不用泛泛的理论科普替代；确认改的是用户指定的 PDF。
+## Note names, degrees, and fretboards
 
-可选样式：音名加相对主调级数，仅调外音用橙色背景高亮，调内音黑字无底色；谱上标记 CAGED 分段，并配对应图。先确认是否符合当前任务，不将某首曲子的调性或样式自动套用到其他课件。
+- Preserve accidentals in per-note labels, label both notes of double stops, and give the starting and target pitches for bends. Explanatory lyric/note labels must not change sounding pitches or rhythms.
+- State the reference for degrees: the overall key or the current chord. Chromatic notes are not necessarily errors. Explain the evidence and uncertainty when harmonic interpretation is unclear.
+- Keep fretboards compact, with reasonable fret spacing and string spacing. String thickness, frets, and position markers should aid reading. Do not draw a cropped high-position edge as a nut.
+- Match diagrams to the actual string/fret route instead of substituting a generic scale box. CAGED letters name shapes, not keys; one or two notes cannot uniquely identify an overlapping region.
+- When the user asks for application to a piece, put section and position-shift labels on the target score and supply corresponding diagrams. General theory does not replace that task. Confirm that the intended PDF is being updated.
 
-## 本地归档
+Optional style: note names plus degrees relative to the main key, orange background highlighting only for chromatic notes, and plain black text for diatonic notes. Add CAGED section labels and matching diagrams when requested. Confirm that the style suits the current task; do not impose one piece's key or layout on another.
 
-最终文件放在用户指定的成果目录；源码、依赖、备份和中间产物留在项目目录。
+## Local organization
 
-按曲目/专项建立或复用子目录；已有练习目录和制作标准时沿用并按需更新，会话中更新的要求优先。
+Place final files in the user's designated deliverables directory. Keep source code, dependencies, backups, and intermediate artifacts in the project.
 
-每项保留一份清楚命名的最终 PDF 和相应可编辑谱；中间文件、检查数据及备份放项目目录。删除已有版本前先确认确为已授权清理的冗余文件，不根据技能擅删用户资料。
+Create or reuse subdirectories by piece or practice topic. Follow and update existing practice indexes and production standards when relevant; the user's current instructions take precedence.
 
-仅修改讲解或图示时比较修改前后的音符和节奏；原谱导出与最终注释 PDF 分开保存于项目中，便于重新生成，不需要每次重新截屏。
+Keep one clearly named final PDF and its editable score for each item. Before deleting older versions, confirm that they are redundant files covered by cleanup authorization; the skill itself does not authorize deleting user materials.
+
+When changing only explanations or diagrams, compare musical notes and rhythms before and after. Keep the original score export and annotated PDF separate inside the project so revisions do not require new screenshots every time.
